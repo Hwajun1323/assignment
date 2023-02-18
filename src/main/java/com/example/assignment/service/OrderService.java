@@ -23,6 +23,7 @@ public class OrderService {
         this.objectMapper = new ObjectMapper();
         this.httpClient = HttpClientBuilder.create().build();
     }
+
     @Autowired
     private OrderRepository orderRepository;
 
@@ -32,6 +33,10 @@ public class OrderService {
         boolean emailExists = checkEmailExists(orderDto.getEmail());
         if (!emailExists) {
             throw new IllegalArgumentException("Email does not exist");
+        }
+        // Check if the customer has not ordered this product already
+        if (orderRepository.findByEmailAndProductId(orderDto.getEmail(), orderDto.getProductId()) != null) {
+            throw new IllegalArgumentException("Customer has already ordered this product");
         }
 
         // Create a new order
