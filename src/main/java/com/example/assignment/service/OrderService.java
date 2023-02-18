@@ -13,6 +13,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class OrderService {
@@ -57,5 +58,9 @@ public class OrderService {
 
         UserListResponse userListResponse = objectMapper.readValue(response.getEntity().getContent(), UserListResponse.class);
         return userListResponse.getData().stream().anyMatch(user -> user.getEmail().equals(email));
+    }
+
+    public List<Order> getOrders() {
+        return orderRepository.findAll();
     }
 }
