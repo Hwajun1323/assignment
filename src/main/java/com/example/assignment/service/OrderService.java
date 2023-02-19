@@ -15,7 +15,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -34,6 +33,7 @@ public class OrderService {
 
         // Check if the email exists in http://reqres.in/api/users
         User user = checkEmailExists(orderDto.getEmail());
+        // boolean emailExists = checkEmailExists(orderDto.getEmail());
         if (user == null) {
             throw new IllegalArgumentException("Email does not exist");
         }
@@ -55,33 +55,16 @@ public class OrderService {
     }
 
     public User checkEmailExists(String email) throws IOException {
-        String url = "http://reqres.in/api/users?page=1";
-        int totalPages = 1;
-        boolean emailFound = false;
-        User user = null;
+        String url = "http://reqres.in/api/users";
+        HttpGet request = new HttpGet(url);
+        HttpResponse response = httpClient.execute(request);
 
-        while(!emailFound && totalPages > 0){
-            HttpGet request = new HttpGet(url);
-            HttpResponse response = httpClient.execute(request);
-
-            UserListResponse userListResponse = objectMapper.readValue(response.getEntity().getContent(), UserListResponse.class);
-            Optional<User> optionalUser = userListResponse.getData().stream()
-                    .filter(u -> u.getEmail().equals(email))
-                    .findFirst();
-            if (optionalUser.isPresent()) {
-                user = optionalUser.get();
-                emailFound = true;
-            } else {
-                if (userListResponse.getPage() < userListResponse.getTotal_pages()) {
-                    totalPages = userListResponse.getTotal_pages();
-                    url = "http://reqres.in/api/users?page=" + (userListResponse.getPage() + 1);
-                } else {
-                    totalPages = 0;
-                }
-            }
-        }
-
-        return user;
+        UserListResponse userListResponse = objectMapper.readValue(response.getEntity().getContent(), UserListResponse.class);
+        //return userListResponse.getData().stream().anyMatch(user -> user.getEmail().equals(email)).findFirst().orElse(null);;
+        return userListResponse.getData().stream()
+                .filter(user -> user.getEmail().equals(email))
+                .findFirst()
+                .orElse(null);
     }
 
     public List<Order> getOrders() {
