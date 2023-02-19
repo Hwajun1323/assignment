@@ -35,8 +35,9 @@ public class OrderService {
         if (!emailExists) {
             throw new IllegalArgumentException("Email does not exist");
         }
+        boolean orderExists = orderRepository.existsByEmailAndProductId(orderDto.getEmail(), orderDto.getProductId());
         // Check if the customer has not ordered this product already
-        if (orderRepository.findByEmailAndProductId(orderDto.getEmail(), orderDto.getProductId()) != null) {
+        if (orderExists) {
             throw new IllegalArgumentException("Customer has already ordered this product");
         }
 
