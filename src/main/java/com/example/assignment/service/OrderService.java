@@ -2,6 +2,7 @@ package com.example.assignment.service;
 
 import com.example.assignment.model.Order;
 import com.example.assignment.model.OrderDto;
+import com.example.assignment.model.User;
 import com.example.assignment.model.UserListResponse;
 import com.example.assignment.repository.OrderRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,8 +32,9 @@ public class OrderService {
     public String createOrder(OrderDto orderDto) throws IOException {
 
         // Check if the email exists in http://reqres.in/api/users
-        boolean emailExists = checkEmailExists(orderDto.getEmail());
-        if (!emailExists) {
+        User user = checkEmailExists(orderDto.getEmail());
+        // boolean emailExists = checkEmailExists(orderDto.getEmail());
+        if (user == null) {
             throw new IllegalArgumentException("Email does not exist");
         }
         boolean orderExists = orderRepository.existsByEmailAndProductId(orderDto.getEmail(), orderDto.getProductId());
@@ -45,20 +47,24 @@ public class OrderService {
         Order order = new Order();
         order.setEmail(orderDto.getEmail());
         order.setProductId(orderDto.getProductId());
-        order.setFirstName(orderDto.getFirstName());
-        order.setLastName(orderDto.getLastName());
+        order.setFirstName(user.getFirst_name());
+        order.setLastName(user.getLast_name());
 
         orderRepository.save(order);
         return order.getOrderId();
     }
 
-    public boolean checkEmailExists(String email) throws IOException {
+    public User checkEmailExists(String email) throws IOException {
         String url = "http://reqres.in/api/users";
         HttpGet request = new HttpGet(url);
         HttpResponse response = httpClient.execute(request);
 
         UserListResponse userListResponse = objectMapper.readValue(response.getEntity().getContent(), UserListResponse.class);
-        return userListResponse.getData().stream().anyMatch(user -> user.getEmail().equals(email));
+        //return userListResponse.getData().stream().anyMatch(user -> user.getEmail().equals(email)).findFirst().orElse(null);;
+        return userListResponse.getData().stream()
+                .filter(user -> user.getEmail().equals(email))
+                .findFirst()
+                .orElse(null);
     }
 
     public List<Order> getOrders() {
