@@ -1,5 +1,5 @@
-# Start with a base image containing Java 17
-FROM adoptopenjdk/openjdk17:jdk-17.0.1_12-alpine-slim
+# Start with a base image containing Java 11
+FROM adoptopenjdk/openjdk11:jdk-11.0.12_7-alpine-slim
 
 # Set the working directory to /app
 WORKDIR /app
