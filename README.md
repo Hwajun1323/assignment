@@ -40,3 +40,5 @@ To remove the Docker image, use the following command:
 docker rmi my-java-11-app
 ```
 This will remove the "my-java-11-app" image from your system.
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/25511860-90033aa6-a6cc-422a-9e3d-ddf1a2c0fcbf?action=collection%2Ffork&collection-url=entityId%3D25511860-90033aa6-a6cc-422a-9e3d-ddf1a2c0fcbf%26entityType%3Dcollection%26workspaceId%3D8f4253e3-76e6-47cd-862a-1f609aa2b9ba)
