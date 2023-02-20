@@ -56,13 +56,13 @@ public class OrderService {
     }
 
     public User checkEmailExists(String email) throws IOException {
-        String url = "http://reqres.in/api/users?page=1";
-        int totalPages = 1;
-        boolean emailFound = false;
+        String url = "http://reqres.in/api/users";
+        int page = 1;
         User user = null;
+        boolean emailFound = false;
 
-        while(!emailFound && totalPages > 0){
-            HttpGet request = new HttpGet(url);
+        while (!emailFound) {
+            HttpGet request = new HttpGet(url + "?page=" + page);
             HttpResponse response = httpClient.execute(request);
 
             UserListResponse userListResponse = objectMapper.readValue(response.getEntity().getContent(), UserListResponse.class);
@@ -72,13 +72,10 @@ public class OrderService {
             if (optionalUser.isPresent()) {
                 user = optionalUser.get();
                 emailFound = true;
+            } else if (userListResponse.getPage() < userListResponse.getTotal_pages()) {
+                page++;
             } else {
-                if (userListResponse.getPage() < userListResponse.getTotal_pages()) {
-                    totalPages = userListResponse.getTotal_pages();
-                    url = "http://reqres.in/api/users?page=" + (userListResponse.getPage() + 1);
-                } else {
-                    totalPages = 0;
-                }
+                break;
             }
         }
 
@@ -87,9 +84,5 @@ public class OrderService {
 
     public List<Order> getOrders() {
         return orderRepository.findAll();
-    }
-
-    public void deleteAll(){
-        orderRepository.deleteAll();
     }
 }
