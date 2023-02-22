@@ -23,34 +23,26 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+@RunWith(SpringRunner.class)
 @SpringBootTest
-@Transactional
 class OrderServiceTest {
     @MockBean
     private OrderRepository orderRepository;
     @Autowired
     private OrderService orderService;
-    private HttpClient httpClient;
-    private ObjectMapper objectMapper;
 
-    @After
+    @AfterEach
     public void cleanup() {
         orderRepository.deleteAll();
     }
